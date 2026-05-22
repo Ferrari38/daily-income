@@ -31,10 +31,13 @@
       font-size: 24px;
       color: #003300;
       margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     h3 {
       margin-top: 25px;
-      font-size: 20px;
+      font-size: 18px;
       color: #004d00;
       border-bottom: 2px solid #e6ffe6;
       padding-bottom: 5px;
@@ -42,8 +45,9 @@
     label {
       display: block;
       margin-top: 12px;
+      font-size: 14px;
       font-weight: bold;
-      color: #333;
+      color: #444;
     }
     input, button, select {
       width: 100%;
@@ -81,16 +85,16 @@
     .btn-danger { background-color: #dc3545; padding: 8px 12px; font-size: 14px; width: auto; float: right; margin-top: 0; }
     .btn-danger:hover { background-color: #bd2130; }
 
-    /* กรอบสีเขียวที่จะบันทึกภาพเป็น PNG */
+    /* กรอบสีเขียวแสดงผลลัพธ์ */
     .result {
       margin-top: 20px;
       background: #e6ffe6;
       padding: 20px;
       border-radius: 8px;
       color: #006600;
-      line-height: 1.7;
+      line-height: 1.8;
       border: 2px dashed #28a745;
-      display: none; /* ซ่อนไว้ก่อนจนกว่าจะมีการคำนวณ */
+      display: none;
     }
 
     /* สไตล์ส่วนตารางประวัติ */
@@ -142,43 +146,43 @@
 </head>
 <body>
   <div class="container">
-    <!-- ฟอร์มกรอกข้อมูลพร้อมลูกเล่นอีโมจิ -->
-    <label>📅 วันที่:</label>
+    <!-- ฟอร์มกรอกข้อมูลแบบคลีน เริ่มต้นด้วยวันที่ทันที -->
+    <label>วันที่:</label>
     <input type="date" id="date" />
 
-    <h3>💰 รายรับ</h3>
-    <label>🟢 รายได้จาก GRAB (บาท):</label>
-    <input type="number" id="grab" placeholder="0.00" />
+    <h3>รายรับ</h3>
+    <label>รายได้จาก GRAB (บาท):</label>
+    <input type="number" id="grab" placeholder="กรอกจำนวนเงิน" />
 
-    <label>🔵 รายได้จาก BOLT (บาท):</label>
-    <input type="number" id="bolt" placeholder="0.00" />
+    <label>รายได้จาก BOLT (บาท):</label>
+    <input type="number" id="bolt" placeholder="กรอกจำนวนเงิน" />
 
-    <label>💵 ทิป (บาท):</label>
-    <input type="number" id="tip" placeholder="0.00" />
+    <label>ทิป (บาท):</label>
+    <input type="number" id="tip" placeholder="กรอกจำนวนเงิน" />
 
-    <label>➕ รายรับอื่นๆ (บาท):</label>
-    <input type="number" id="extraIncome" placeholder="0.00" />
+    <label>รายรับอื่นๆ (บาท):</label>
+    <input type="number" id="extraIncome" placeholder="กรอกจำนวนเงิน" />
 
-    <h3>⛽ รายจ่าย</h3>
-    <label>⛽ ค่าน้ำมัน (บาท):</label>
-    <input type="number" id="oil" placeholder="0.00" />
+    <h3>รายจ่าย</h3>
+    <label>ค่าน้ำมัน (บาท):</label>
+    <input type="number" id="oil" placeholder="กรอกจำนวนเงิน" />
 
-    <label>📉 รายจ่ายอื่นๆ (บาท):</label>
-    <input type="number" id="otherExpense" placeholder="0.00" />
+    <label>รายจ่ายอื่นๆ (บาท):</label>
+    <input type="number" id="otherExpense" placeholder="กรอกจำนวนเงิน" />
 
-    <h3>🛣️ ระยะทางที่ใช้</h3>
-    <label>🏁 เริ่มงาน (กม.):</label>
-    <input type="number" id="startKm" placeholder="เช่น 12000" />
+    <h3>ระยะทางที่ใช้</h3>
+    <label>เริ่มงาน (กม.):</label>
+    <input type="number" id="startKm" placeholder="กรอกเลขไมล์เริ่มงาน" />
 
-    <label>🛑 เลิกงาน (กม.):</label>
-    <input type="number" id="endKm" placeholder="เช่น 12150" />
+    <label>เลิกงาน (กม.):</label>
+    <input type="number" id="endKm" placeholder="กรอกเลขไมล์เลิกงาน" />
 
-    <!-- ปุ่มกดพร้อมอีโมจิไอคอน -->
+    <!-- ปุ่มกดควบคุมฟังก์ชัน -->
     <button class="btn-calc" onclick="calculateAndSave()">📊 คำนวณและบันทึกประวัติ</button>
     <button class="btn-save" onclick="saveAsPNG()">📸 บันทึกรูปภาพสรุปผล (PNG)</button>
     <button class="btn-reset" onclick="resetForm()">🧹 ล้างข้อมูล</button>
 
-    <!-- กล่องสรุปผลสีเขียวแบบมีอีโมจิ -->
+    <!-- กล่องสรุปผลสีเขียว เน้นจัดสัดส่วนรายได้สุทธิใหม่ให้ชัดเจน -->
     <div class="result" id="result"></div>
   </div>
 
@@ -206,7 +210,6 @@
   </div>
 
   <script>
-    // ตั้งค่าวันที่ปัจจุบันเมื่อเปิดหน้าจอ และแสดงประวัติเก่า
     document.addEventListener("DOMContentLoaded", function() {
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('date').value = today;
@@ -244,13 +247,17 @@
       const maintenance = totalIncomeBeforeMaintenance * 0.10;
 
       const totalExpenses = oil + otherExpense + maintenance + boltCommission;
-      const netIncome = totalIncomeBeforeMaintenance - totalExpenses + tip;
+      
+      // การคำนวณสัดส่วนรายได้ต่างๆ ตามที่กำหนด
+      const netIncome = totalIncomeBeforeMaintenance - totalExpenses + tip; // รายได้สุทธิหลังหักค่าใช้จ่าย
+      const netHalf = netIncome / 2; // รายได้สุทธิหาร 2
+      const netHalfPlusMaintenance = netHalf + maintenance; // รายได้สุทธิหาร 2 + ค่าซ่อม
+      const netHalfPlusTip = netHalf + tip; // รายได้สุทธิหาร 2 + ทิป
 
-      const halfIncomePlusMaintenance = (netIncome / 2 + maintenance).toFixed(2);
       const costPerKm = distance > 0 ? (totalIncomeBeforeCommission / distance).toFixed(2) : "0.00";
 
-      // แสดงผลในกล่องสรุปผลสีเขียวพร้อมใส่อีโมจิลูกเล่น
-      renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, tip, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, totalExpenses, netIncome, halfIncomePlusMaintenance, distance, costPerKm);
+      // แสดงผลลัพธ์ในกล่องสรุปผล
+      renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, totalExpenses, netIncome, netHalf, netHalfPlusMaintenance, netHalfPlusTip, tip, distance, costPerKm);
 
       // บันทึกลงเครื่อง (LocalStorage)
       const record = {
@@ -259,32 +266,35 @@
       saveToLocalStorage(record);
     }
 
-    function renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, tip, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, totalExpenses, netIncome, halfIncomePlusMaintenance, distance, costPerKm) {
+    function renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, totalExpenses, netIncome, netHalf, netHalfPlusMaintenance, netHalfPlusTip, tip, distance, costPerKm) {
       const format = n => n.toLocaleString(undefined, { minimumFractionDigits: 2 });
       const resultDiv = document.getElementById('result');
 
       resultDiv.innerHTML = `
-        <h3 style="margin-top:0; border-bottom: 2px solid #28a745;">📝 สรุปผลประจำวันที่: ${date}</h3>
-        <strong>💰 รายรับ</strong><br>
+        <h3 style="margin-top:0; border-bottom: 2px solid #28a745; padding-bottom: 8px;">📋 รายงานสรุปผลประจำวันที่: ${date}</h3>
+        <strong>💰 รายรับย่อย</strong><br>
         • GRAB: ${format(grab)} บาท<br>
         • BOLT: ${format(bolt)} บาท (หัก 19.26%: ${format(boltCommission)} บาท เหลือ: ${format(boltAfter)} บาท)<br>
         • รายรับอื่นๆ: ${format(extraIncome)} บาท<br>
-        • ทิป: ${format(tip)} บาท<br>
-        รวมรายรับก่อนหักคอม: ${format(totalIncomeBeforeCommission)} บาท<br>
-        รวมรายรับหลังหักคอม: ${format(totalIncomeBeforeMaintenance)} บาท<br><br>
+        • รวมรายรับทั้งหมด (ก่อนหักคอม): ${format(totalIncomeBeforeCommission)} บาท<br><br>
 
-        <strong>⛽ รายจ่าย</strong><br>
-        • ค่าซ่อม 10%: ${format(maintenance)} บาท<br>
+        <strong>⛽ รายจ่ายย่อย</strong><br>
         • ค่าน้ำมัน: ${format(oil)} บาท<br>
         • รายจ่ายอื่นๆ: ${format(otherExpense)} บาท<br>
         • ค่าคอมมิชชั่น BOLT (19.26%): ${format(boltCommission)} บาท<br>
-        <strong>รวมรายจ่ายทั้งหมด:</strong> ${format(totalExpenses)} บาท<br><br>
+        • รวมรายจ่ายแฝง: ${format(totalExpenses - maintenance)} บาท<br><br>
 
-        <strong style="font-size: 16px;">✨ รายได้สุทธิ: ${format(netIncome)} บาท</strong><br>
-        <strong style="font-size: 16px;">👥 หาร 2 + ค่าซ่อม: ${format(parseFloat(halfIncomePlusMaintenance))} บาท</strong><br><br>
+        <strong style="font-size: 15px; color: #004d00; display: block; border-top: 1px solid #28a745; padding-top: 8px; margin-top: 5px;">📊 สัดส่วนรายได้สุทธิและการแบ่งสรร</strong>
+        • ✨ รายได้สุทธิหลังหักค่าใช้จ่าย: <strong>${format(netIncome)}</strong> บาท<br>
+        • 👥 รายได้สุทธิหาร 2: <strong>${format(netHalf)}</strong> บาท<br>
+        • 🔧 รายได้สุทธิหาร 2 + ค่าซ่อม: <strong>${format(netHalfPlusMaintenance)}</strong> บาท<br>
+        • 💵 รายได้สุทธิหาร 2 + ทิป: <strong>${format(netHalfPlusTip)}</strong> บาท<br>
+        • 🎁 ทิป: <strong>${format(tip)}</strong> บาท<br>
+        • 🛠️ ค่าซ่อม: <strong>${format(maintenance)}</strong> บาท<br><br>
 
-        🏁 ระยะทางที่ใช้: ${distance} กม.<br>
-        📈 บาทต่อกิโลเมตร: ${costPerKm} บาท/กม.
+        <span style="font-size: 13px; color: #555; display: block; border-top: 1px dotted #28a745; padding-top: 5px;">
+          🏁 ระยะทางวิ่งจริง: ${distance} กม. | 📈 เฉลี่ย: ${costPerKm} บาท/กม.
+        </span>
       `;
       resultDiv.style.display = 'block';
     }
@@ -384,7 +394,7 @@
         link.href = canvas.toDataURL('image/png');
         link.click();
       }).catch(err => {
-        alert('❌ ระบบบันทึกรูปภาพขัดข้อง กรุณาลองใหมีกครั้ง');
+        alert('❌ ระบบบันทึกรูปภาพขัดข้อง กรุณาลองใหม่อีกครั้ง');
         console.error(err);
       });
     }
