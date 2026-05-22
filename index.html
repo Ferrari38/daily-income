@@ -147,35 +147,35 @@
 <body>
   <div class="container">
     <!-- ฟอร์มกรอกข้อมูลแบบคลีน เริ่มต้นด้วยวันที่ทันที -->
-    <label>วันที่:</label>
+    <label>🗓️วันที่:</label>
     <input type="date" id="date" />
 
-    <h3>รายรับ</h3>
+    <h3>💰รายรับ</h3>
     <label>รายได้จาก GRAB (บาท):</label>
-    <input type="number" id="grab" placeholder="กรอกจำนวนเงิน" />
+    <input type="number" id="grab" placeholder="จำนวนเงิน" />
 
     <label>รายได้จาก BOLT (บาท):</label>
-    <input type="number" id="bolt" placeholder="กรอกจำนวนเงิน" />
+    <input type="number" id="bolt" placeholder="จำนวนเงิน" />
 
     <label>ทิป (บาท):</label>
-    <input type="number" id="tip" placeholder="กรอกจำนวนเงิน" />
+    <input type="number" id="tip" placeholder="จำนวนเงิน" />
 
     <label>รายรับอื่นๆ (บาท):</label>
-    <input type="number" id="extraIncome" placeholder="กรอกจำนวนเงิน" />
+    <input type="number" id="extraIncome" placeholder="จำนวนเงิน" />
 
-    <h3>รายจ่าย</h3>
+    <h3>💸รายจ่าย</h3>
     <label>ค่าน้ำมัน (บาท):</label>
-    <input type="number" id="oil" placeholder="กรอกจำนวนเงิน" />
+    <input type="number" id="oil" placeholder="จำนวนเงิน" />
 
     <label>รายจ่ายอื่นๆ (บาท):</label>
-    <input type="number" id="otherExpense" placeholder="กรอกจำนวนเงิน" />
+    <input type="number" id="otherExpense" placeholder="จำนวนเงิน" />
 
-    <h3>ระยะทางที่ใช้</h3>
+    <h3>📝ระยะทางที่ใช้</h3>
     <label>เริ่มงาน (กม.):</label>
-    <input type="number" id="startKm" placeholder="กรอกเลขไมล์เริ่มงาน" />
+    <input type="number" id="startKm" placeholder="เลขไมล์เริ่มงาน" />
 
     <label>เลิกงาน (กม.):</label>
-    <input type="number" id="endKm" placeholder="กรอกเลขไมล์เลิกงาน" />
+    <input type="number" id="endKm" placeholder="เลขไมล์เลิกงาน" />
 
     <!-- ปุ่มกดควบคุมฟังก์ชัน -->
     <button class="btn-calc" onclick="calculateAndSave()">📊 คำนวณและบันทึกประวัติ</button>
@@ -272,13 +272,13 @@
 
       resultDiv.innerHTML = `
         <h3 style="margin-top:0; border-bottom: 2px solid #28a745; padding-bottom: 8px;">📋 รายงานสรุปผลประจำวันที่: ${date}</h3>
-        <strong>💰 รายรับย่อย</strong><br>
+        <strong>💰 รายรับ</strong><br>
         • GRAB: ${format(grab)} บาท<br>
         • BOLT: ${format(bolt)} บาท (หัก 19.26%: ${format(boltCommission)} บาท เหลือ: ${format(boltAfter)} บาท)<br>
         • รายรับอื่นๆ: ${format(extraIncome)} บาท<br>
         • รวมรายรับทั้งหมด (ก่อนหักคอม): ${format(totalIncomeBeforeCommission)} บาท<br><br>
 
-        <strong>⛽ รายจ่ายย่อย</strong><br>
+        <strong>⛽ รายจ่าย</strong><br>
         • ค่าน้ำมัน: ${format(oil)} บาท<br>
         • รายจ่ายอื่นๆ: ${format(otherExpense)} บาท<br>
         • ค่าคอมมิชชั่น BOLT (19.26%): ${format(boltCommission)} บาท<br>
@@ -292,7 +292,7 @@
         • 🎁 ทิป: <strong>${format(tip)}</strong> บาท<br>
         • 🛠️ ค่าซ่อม: <strong>${format(maintenance)}</strong> บาท<br><br>
 
-        <span style="font-size: 13px; color: #555; display: block; border-top: 1px dotted #28a745; padding-top: 5px;">
+        <span style="font-size: 15px; color: #555; display: block; border-top: 1px dotted #28a745; padding-top: 5px;">
           🏁 ระยะทางวิ่งจริง: ${distance} กม. | 📈 เฉลี่ย: ${costPerKm} บาท/กม.
         </span>
       `;
