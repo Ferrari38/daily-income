@@ -33,30 +33,43 @@
       margin-top: 0;
     }
     h3 {
-      margin-top: 20px;
+      margin-top: 25px;
       font-size: 20px;
       color: #004d00;
+      border-bottom: 2px solid #e6ffe6;
+      padding-bottom: 5px;
     }
     label {
       display: block;
-      margin-top: 10px;
+      margin-top: 12px;
+      font-weight: bold;
+      color: #333;
     }
     input, button, select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-top: 5px;
       font-size: 16px;
-      border-radius: 5px;
+      border-radius: 8px;
       border: 1px solid #ccc;
     }
+    input:focus {
+      border-color: #28a745;
+      outline: none;
+    }
     button {
-      margin-top: 10px;
+      margin-top: 12px;
       cursor: pointer;
       color: white;
       border: none;
       font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
     }
-    .btn-calc { background-color: #28a745; margin-top: 15px; }
+    .btn-calc { background-color: #28a745; margin-top: 20px; font-size: 18px; }
     .btn-calc:hover { background-color: #218838; }
     
     .btn-save { background-color: #007bff; }
@@ -65,17 +78,18 @@
     .btn-reset { background-color: #6c757d; }
     .btn-reset:hover { background-color: #5a6268; }
 
-    .btn-danger { background-color: #dc3545; padding: 8px; font-size: 14px; width: auto; float: right; }
+    .btn-danger { background-color: #dc3545; padding: 8px 12px; font-size: 14px; width: auto; float: right; margin-top: 0; }
     .btn-danger:hover { background-color: #bd2130; }
 
     /* กรอบสีเขียวที่จะบันทึกภาพเป็น PNG */
     .result {
       margin-top: 20px;
       background: #e6ffe6;
-      padding: 15px;
-      border-radius: 5px;
+      padding: 20px;
+      border-radius: 8px;
       color: #006600;
-      line-height: 1.6;
+      line-height: 1.7;
+      border: 2px dashed #28a745;
       display: none; /* ซ่อนไว้ก่อนจนกว่าจะมีการคำนวณ */
     }
 
@@ -104,18 +118,22 @@
     }
     .btn-view {
       background-color: #17a2b8;
-      padding: 5px 10px;
+      padding: 6px 12px;
       font-size: 12px;
       margin: 0;
       width: auto;
     }
+    .btn-view:hover { background-color: #138496; }
+    
     .btn-del {
       background-color: #dc3545;
-      padding: 5px 10px;
+      padding: 6px 12px;
       font-size: 12px;
       margin: 0;
       width: auto;
     }
+    .btn-del:hover { background-color: #c82333; }
+
     @media (max-width: 500px) {
       .history-table { font-size: 12px; }
       .btn-view, .btn-del { padding: 4px 6px; font-size: 11px; }
@@ -124,59 +142,60 @@
 </head>
 <body>
   <div class="container">
-    <!-- เริ่มต้นหน้าจอด้วยอินพุตวันที่ทันที -->
-    <label>วันที่:</label>
+    <!-- ฟอร์มกรอกข้อมูลพร้อมลูกเล่นอีโมจิ -->
+    <label>📅 วันที่:</label>
     <input type="date" id="date" />
 
-    <h3>รายรับ</h3>
-    <label>รายได้จาก GRAB (บาท):</label>
-    <input type="number" id="grab" />
+    <h3>💰 รายรับ</h3>
+    <label>🟢 รายได้จาก GRAB (บาท):</label>
+    <input type="number" id="grab" placeholder="0.00" />
 
-    <label>รายได้จาก BOLT (บาท):</label>
-    <input type="number" id="bolt" />
+    <label>🔵 รายได้จาก BOLT (บาท):</label>
+    <input type="number" id="bolt" placeholder="0.00" />
 
-    <label>ทิป (บาท):</label>
-    <input type="number" id="tip" />
+    <label>💵 ทิป (บาท):</label>
+    <input type="number" id="tip" placeholder="0.00" />
 
-    <label>รายรับอื่นๆ (บาท):</label>
-    <input type="number" id="extraIncome" />
+    <label>➕ รายรับอื่นๆ (บาท):</label>
+    <input type="number" id="extraIncome" placeholder="0.00" />
 
-    <h3>รายจ่าย</h3>
-    <label>ค่าน้ำมัน (บาท):</label>
-    <input type="number" id="oil" />
+    <h3>⛽ รายจ่าย</h3>
+    <label>⛽ ค่าน้ำมัน (บาท):</label>
+    <input type="number" id="oil" placeholder="0.00" />
 
-    <label>รายจ่ายอื่นๆ (บาท):</label>
-    <input type="number" id="otherExpense" />
+    <label>📉 รายจ่ายอื่นๆ (บาท):</label>
+    <input type="number" id="otherExpense" placeholder="0.00" />
 
-    <h3>ระยะทางที่ใช้</h3>
-    <label>เริ่มงาน (กม.):</label>
-    <input type="number" id="startKm" />
+    <h3>🛣️ ระยะทางที่ใช้</h3>
+    <label>🏁 เริ่มงาน (กม.):</label>
+    <input type="number" id="startKm" placeholder="เช่น 12000" />
 
-    <label>เลิกงาน (กม.):</label>
-    <input type="number" id="endKm" />
+    <label>🛑 เลิกงาน (กม.):</label>
+    <input type="number" id="endKm" placeholder="เช่น 12150" />
 
-    <button class="btn-calc" onclick="calculateAndSave()">คำนวณและบันทึกประวัติ</button>
-    <button class="btn-save" onclick="saveAsPNG()">บันทึกรูปภาพสรุปผล (PNG)</button>
-    <button class="btn-reset" onclick="resetForm()">ล้างข้อมูล</button>
+    <!-- ปุ่มกดพร้อมอีโมจิไอคอน -->
+    <button class="btn-calc" onclick="calculateAndSave()">📊 คำนวณและบันทึกประวัติ</button>
+    <button class="btn-save" onclick="saveAsPNG()">📸 บันทึกรูปภาพสรุปผล (PNG)</button>
+    <button class="btn-reset" onclick="resetForm()">🧹 ล้างข้อมูล</button>
 
-    <!-- กล่องสรุปผลสีเขียว -->
+    <!-- กล่องสรุปผลสีเขียวแบบมีอีโมจิ -->
     <div class="result" id="result"></div>
   </div>
 
   <!-- ส่วนตารางแสดงประวัติย้อนหลัง -->
   <div class="container">
-    <h2 style="display: inline-block;">📊 ประวัติย้อนหลัง</h2>
-    <button class="btn-danger" onclick="clearAllHistory()">ล้างประวัติทั้งหมด</button>
+    <h2 style="display: inline-block;">🗂️ ประวัติย้อนหลัง</h2>
+    <button class="btn-danger" onclick="clearAllHistory()">⚠️ ล้างประวัติทั้งหมด</button>
     <div style="clear: both;"></div>
     
     <div style="overflow-x: auto;">
       <table class="history-table">
         <thead>
           <tr>
-            <th>วันที่</th>
-            <th>รายได้สุทธิ</th>
-            <th>ระยะทาง</th>
-            <th>จัดการ</th>
+            <th>📅 วันที่</th>
+            <th>💵 รายได้สุทธิ</th>
+            <th>🛣️ ระยะทาง</th>
+            <th>⚙️ จัดการ</th>
           </tr>
         </thead>
         <tbody id="history-list">
@@ -197,7 +216,7 @@
     function calculateAndSave() {
       const date = document.getElementById('date').value;
       if (!date) {
-        alert("กรุณาเลือกวันที่ก่อนทำการคำนวณ");
+        alert("⚠️ กรุณาเลือกวันที่ก่อนทำการคำนวณ");
         return;
       }
 
@@ -212,29 +231,28 @@
 
       const distance = endKm - startKm;
       if (distance < 0) {
-        alert("กรุณากรอกเลขกิโลเมตรให้ถูกต้อง (เลิกงานต้องมากกว่าเริ่มงาน)");
+        alert("❌ กรุณากรอกเลขกิโลเมตรให้ถูกต้อง (เลิกงานต้องมากกว่าเริ่มงาน)");
         return;
       }
 
       const totalIncomeBeforeCommission = grab + bolt + tip + extraIncome;
 
-      // ปรับปรุงค่าคอมมิชชั่นเป็น 19.26%
+      // เรทคอมมิชชั่น 19.26%
       const boltCommission = bolt * 0.1926;
       const boltAfter = bolt - boltCommission;
       const totalIncomeBeforeMaintenance = grab + boltAfter + extraIncome;
       const maintenance = totalIncomeBeforeMaintenance * 0.10;
 
-      // คำนวณรายจ่ายและรายได้สุทธิตามหลักสูตรเดิมของคุณ
       const totalExpenses = oil + otherExpense + maintenance + boltCommission;
       const netIncome = totalIncomeBeforeMaintenance - totalExpenses + tip;
 
       const halfIncomePlusMaintenance = (netIncome / 2 + maintenance).toFixed(2);
       const costPerKm = distance > 0 ? (totalIncomeBeforeCommission / distance).toFixed(2) : "0.00";
 
-      // อัปเดต HTML ในกล่องสรุปผลสีเขียว
+      // แสดงผลในกล่องสรุปผลสีเขียวพร้อมใส่อีโมจิลูกเล่น
       renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, tip, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, totalExpenses, netIncome, halfIncomePlusMaintenance, distance, costPerKm);
 
-      // โครงสร้างวัตถุเพื่อบันทึกลงฐานข้อมูลของบราวเซอร์ (LocalStorage)
+      // บันทึกลงเครื่อง (LocalStorage)
       const record = {
         date, grab, bolt, tip, extraIncome, oil, otherExpense, startKm, endKm, netIncome, distance
       };
@@ -246,43 +264,42 @@
       const resultDiv = document.getElementById('result');
 
       resultDiv.innerHTML = `
-        <strong>สรุปผลประจำวันที่: ${date}</strong><br><br>
-        <strong>รายรับ</strong><br>
-        GRAB: ${format(grab)} บาท<br>
-        BOLT: ${format(bolt)} บาท (หัก 19.26%: ${format(boltCommission)} บาท เหลือ: ${format(boltAfter)} บาท)<br>
-        รายรับอื่นๆ: ${format(extraIncome)} บาท<br>
-        ทิป: ${format(tip)} บาท<br>
-        รวมรายรับก่อนหักค่าคอมมิชชั่น: ${format(totalIncomeBeforeCommission)} บาท<br>
-        รวมรายรับก่อนหักค่าซ่อม: ${format(totalIncomeBeforeMaintenance)} บาท<br><br>
+        <h3 style="margin-top:0; border-bottom: 2px solid #28a745;">📝 สรุปผลประจำวันที่: ${date}</h3>
+        <strong>💰 รายรับ</strong><br>
+        • GRAB: ${format(grab)} บาท<br>
+        • BOLT: ${format(bolt)} บาท (หัก 19.26%: ${format(boltCommission)} บาท เหลือ: ${format(boltAfter)} บาท)<br>
+        • รายรับอื่นๆ: ${format(extraIncome)} บาท<br>
+        • ทิป: ${format(tip)} บาท<br>
+        รวมรายรับก่อนหักคอม: ${format(totalIncomeBeforeCommission)} บาท<br>
+        รวมรายรับหลังหักคอม: ${format(totalIncomeBeforeMaintenance)} บาท<br><br>
 
-        <strong>รายจ่าย</strong><br>
-        ค่าซ่อม 10%: ${format(maintenance)} บาท<br>
-        ค่าน้ำมัน: ${format(oil)} บาท<br>
-        รายจ่ายอื่นๆ: ${format(otherExpense)} บาท<br>
-        ค่าคอมมิชชั่น BOLT (19.26%): ${format(boltCommission)} บาท<br>
-        รวมรายจ่ายทั้งหมด: ${format(totalExpenses)} บาท<br><br>
+        <strong>⛽ รายจ่าย</strong><br>
+        • ค่าซ่อม 10%: ${format(maintenance)} บาท<br>
+        • ค่าน้ำมัน: ${format(oil)} บาท<br>
+        • รายจ่ายอื่นๆ: ${format(otherExpense)} บาท<br>
+        • ค่าคอมมิชชั่น BOLT (19.26%): ${format(boltCommission)} บาท<br>
+        <strong>รวมรายจ่ายทั้งหมด:</strong> ${format(totalExpenses)} บาท<br><br>
 
-        <strong>รายได้สุทธิ:</strong> ${format(netIncome)} บาท<br>
-        <strong>หาร 2 + ค่าซ่อม:</strong> ${format(parseFloat(halfIncomePlusMaintenance))} บาท<br><br>
+        <strong style="font-size: 16px;">✨ รายได้สุทธิ: ${format(netIncome)} บาท</strong><br>
+        <strong style="font-size: 16px;">👥 หาร 2 + ค่าซ่อม: ${format(parseFloat(halfIncomePlusMaintenance))} บาท</strong><br><br>
 
-        <strong>ระยะทางที่ใช้:</strong> ${distance} กม.<br>
-        <strong>บาทต่อกิโลเมตร:</strong> ${costPerKm} บาท/กม.
+        🏁 ระยะทางที่ใช้: ${distance} กม.<br>
+        📈 บาทต่อกิโลเมตร: ${costPerKm} บาท/กม.
       `;
-      resultDiv.style.display = 'block'; // แสดงกล่องสีเขียวเมื่อคำนวณเสร็จ
+      resultDiv.style.display = 'block';
     }
 
-    // ฟังก์ชันจัดการฐานข้อมูลประวัติในเบราว์เซอร์
     function saveToLocalStorage(newRecord) {
       let history = JSON.parse(localStorage.getItem("driver_income_history")) || [];
       const existingIndex = history.findIndex(item => item.date === newRecord.date);
       
       if (existingIndex !== -1) {
-        history[existingIndex] = newRecord; // อัปเดตทับถ้าเป็นวันที่เดิม
+        history[existingIndex] = newRecord;
       } else {
-        history.push(newRecord); // เพิ่มรายการใหม่
+        history.push(newRecord);
       }
       
-      history.sort((a, b) => new Date(b.date) - new Date(a.date)); // เรียงจากวันใหม่ไปเก่า
+      history.sort((a, b) => new Date(b.date) - new Date(a.date));
       localStorage.setItem("driver_income_history", JSON.stringify(history));
       displayHistory();
     }
@@ -293,7 +310,7 @@
       historyList.innerHTML = "";
 
       if (history.length === 0) {
-        historyList.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">ยังไม่มีประวัติการบันทึก</td></tr>`;
+        historyList.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">ยังไม่มีประวัติการบันทึก 📭</td></tr>`;
         return;
       }
 
@@ -304,8 +321,8 @@
           <td style="color: #006600; font-weight: bold;">${item.netIncome.toLocaleString(undefined, { minimumFractionDigits: 2 })} บาท</td>
           <td>${item.distance} กม.</td>
           <td class="action-btns">
-            <button class="btn-view" onclick="viewHistoryItem(${index})">ดู</button>
-            <button class="btn-del" onclick="deleteHistoryItem(${index})">ลบ</button>
+            <button class="btn-view" onclick="viewHistoryItem(${index})">🔍 ดู</button>
+            <button class="btn-del" onclick="deleteHistoryItem(${index})">🗑️ ลบ</button>
           </td>
         `;
         historyList.appendChild(tr);
@@ -316,7 +333,6 @@
       const history = JSON.parse(localStorage.getItem("driver_income_history")) || [];
       const item = history[index];
 
-      // ยัดค่าเก่ากลับเข้าฟอร์ม
       document.getElementById('date').value = item.date;
       document.getElementById('grab').value = item.grab || '';
       document.getElementById('bolt').value = item.bolt || '';
@@ -327,12 +343,12 @@
       document.getElementById('startKm').value = item.startKm || '';
       document.getElementById('endKm').value = item.endKm || '';
 
-      calculateAndSave(); // รันฟังก์ชันเพื่อคำนวณและโชว์ผลลัพธ์กรอบเขียว
-      window.scrollTo({ top: 0, behavior: 'smooth' }); // เลื่อนจอกลับไปด้านบนนุ่มๆ
+      calculateAndSave();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function deleteHistoryItem(index) {
-      if (confirm("คุณต้องการลบประวัติรายการนี้ใช่หรือไม่?")) {
+      if (confirm("❓ คุณต้องการลบประวัติรายการนี้ใช่หรือไม่?")) {
         let history = JSON.parse(localStorage.getItem("driver_income_history")) || [];
         history.splice(index, 1);
         localStorage.setItem("driver_income_history", JSON.stringify(history));
@@ -341,7 +357,7 @@
     }
 
     function clearAllHistory() {
-      if (confirm("⚠️ คุณต้องการลบประวัติทั้งหมดใช่หรือไม่? ข้อมูลจะถูกลบถาวร")) {
+      if (confirm("⚠️ คุณต้องการลบประวัติทั้งหมดใช่หรือไม่? ข้อมูลจะถูกลบถาวรและไม่สามารถกู้คืนได้")) {
         localStorage.removeItem("driver_income_history");
         displayHistory();
         document.getElementById('result').style.display = 'none';
@@ -349,19 +365,18 @@
       }
     }
 
-    // ฟังก์ชันสำคัญ: บันทึกเฉพาะกรอบสีเขียวเป็นรูปภาพ PNG เท่านั้น
     function saveAsPNG() {
       const target = document.getElementById('result');
       
       if (target.innerHTML === "" || target.style.display === 'none') {
-        alert("กรุณาทำการคำนวณรายได้ให้เสร็จสิ้นก่อนกดบันทึกรูปภาพ");
+        alert("⚠️ กรุณากรอกข้อมูลและกดคำนวณรายได้ให้เรียบร้อยก่อนบันทึกภาพ");
         return;
       }
       
       html2canvas(target, {
-        scale: 2, // เพิ่มความชัดระดับคูณสอง รูปจะได้ไม่แตกเวลาเปิดดู
+        scale: 2, 
         useCORS: true,
-        backgroundColor: "#e6ffe6" // คุมธีมสีพื้นหลังให้เป็นสีเขียวพาสเทลตามหน้าเว็บ
+        backgroundColor: "#e6ffe6" 
       }).then(canvas => {
         const link = document.createElement('a');
         const dateInput = document.getElementById('date').value || 'summary';
@@ -369,7 +384,7 @@
         link.href = canvas.toDataURL('image/png');
         link.click();
       }).catch(err => {
-        alert('ระบบบันทึกรูปภาพขัดข้อง กรุณาลองใหม่อีกครั้ง');
+        alert('❌ ระบบบันทึกรูปภาพขัดข้อง กรุณาลองใหมีกครั้ง');
         console.error(err);
       });
     }
