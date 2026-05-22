@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>คำนวณรายได้ประจำวัน</title>
+  
+  <!-- ดึงคลังโปรแกรม html2canvas สำหรับจับภาพเฉพาะกรอบสรุปผลเป็นไฟล์ PNG -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f2f2f2;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-size: 24px;
+      color: #003300;
+      margin-top: 0;
+    }
+    h3 {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #004d00;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, button, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 10px;
+      cursor: pointer;
+      color: white;
+      border: none;
+      font-weight: bold;
+    }
+    .btn-calc { background-color: #28a745; margin-top: 15px; }
+    .btn-calc:hover { background-color: #218838; }
+    
+    .btn-save { background-color: #007bff; }
+    .btn-save:hover { background-color: #0069d9; }
+    
+    .btn-reset { background-color: #6c757d; }
+    .btn-reset:hover { background-color: #5a6268; }
+
+    .btn-danger { background-color: #dc3545; padding: 8px; font-size: 14px; width: auto; float: right; }
+    .btn-danger:hover { background-color: #bd2130; }
+
+    /* กรอบสีเขียวที่จะบันทึกภาพเป็น PNG */
+    .result {
+      margin-top: 20px;
+      background: #e6ffe6;
+      padding: 15px;
+      border-radius: 5px;
+      color: #006600;
+      line-height: 1.6;
+      display: none; /* ซ่อนไว้ก่อนจนกว่าจะมีการคำนวณ */
+    }
+
+    /* สไตล์ส่วนตารางประวัติ */
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .history-table th, .history-table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    .history-table th {
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    .history-table tr:hover {
+      background-color: #f1f1f1;
+    }
+    .action-btns {
+      display: flex;
+      gap: 5px;
+    }
+    .btn-view {
+      background-color: #17a2b8;
+      padding: 5px 10px;
+      font-size: 12px;
+      margin: 0;
+      width: auto;
+    }
+    .btn-del {
+      background-color: #dc3545;
+      padding: 5px 10px;
+      font-size: 12px;
+      margin: 0;
+      width: auto;
+    }
+    @media (max-width: 500px) {
+      .history-table { font-size: 12px; }
+      .btn-view, .btn-del { padding: 4px 6px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- เริ่มต้นหน้าจอด้วยอินพุตวันที่ทันที -->
+    <label>วันที่:</label>
+    <input type="date" id="date" />
+
+    <h3>รายรับ</h3>
+    <label>รายได้จาก GRAB (บาท):</label>
+    <input type="number" id="grab" />
+
+    <label>รายได้จาก BOLT (บาท):</label>
+    <input type="number" id="bolt" />
+
+    <label>ทิป (บาท):</label>
+    <input type="number" id="tip" />
+
+    <label>รายรับอื่นๆ (บาท):</label>
+    <input type="number" id="extraIncome" />
+
+    <h3>รายจ่าย</h3>
+    <label>ค่าน้ำมัน (บาท):</label>
+    <input type="number" id="oil" />
+
+    <label>รายจ่ายอื่นๆ (บาท):</label>
+    <input type="number" id="otherExpense" />
+
+    <h3>ระยะทางที่ใช้</h3>
+    <label>เริ่มงาน (กม.):</label>
+    <input type="number" id="startKm" />
+
+    <label>เลิกงาน (กม.):</label>
+    <input type="number" id="endKm" />
+
+    <button class="btn-calc" onclick="calculateAndSave()">คำนวณและบันทึกประวัติ</button>
+    <button class="btn-save" onclick="saveAsPNG()">บันทึกรูปภาพสรุปผล (PNG)</button>
+    <button class="btn-reset" onclick="resetForm()">ล้างข้อมูล</button>
+
+    <!-- กล่องสรุปผลสีเขียว -->
+    <div class="result" id="result"></div>
+  </div>
+
+  <!-- ส่วนตารางแสดงประวัติย้อนหลัง -->
+  <div class="container">
+    <h2 style="display: inline-block;">📊 ประวัติย้อนหลัง</h2>
+    <button class="btn-danger" onclick="clearAllHistory()">ล้างประวัติทั้งหมด</button>
+    <div style="clear: both;"></div>
+    
+    <div style="overflow-x: auto;">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>วันที่</th>
+            <th>รายได้สุทธิ</th>
+            <th>ระยะทาง</th>
+            <th>จัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="history-list">
+          <!-- ข้อมูลจะถูกโหลดเข้ามาด้วย JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // ตั้งค่าวันที่ปัจจุบันเมื่อเปิดหน้าจอ และแสดงประวัติเก่า
+    document.addEventListener("DOMContentLoaded", function() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('date').value = today;
+      displayHistory();
+    });
+
+    function calculateAndSave() {
+      const date = document.getElementById('date').value;
+      if (!date) {
+        alert("กรุณาเลือกวันที่ก่อนทำการคำนวณ");
+        return;
+      }
+
+      const grab = parseFloat(document.getElementById('grab').value) || 0;
+      const bolt = parseFloat(document.getElementById('bolt').value) || 0;
+      const tip = parseFloat(document.getElementById('tip').value) || 0;
+      const extraIncome = parseFloat(document.getElementById('extraIncome').value) || 0;
+      const oil = parseFloat(document.getElementById('oil').value) || 0;
+      const otherExpense = parseFloat(document.getElementById('otherExpense').value) || 0;
+      const startKm = parseFloat(document.getElementById('startKm').value) || 0;
+      const endKm = parseFloat(document.getElementById('endKm').value) || 0;
+
+      const distance = endKm - startKm;
+      if (distance < 0) {
+        alert("กรุณากรอกเลขกิโลเมตรให้ถูกต้อง (เลิกงานต้องมากกว่าเริ่มงาน)");
+        return;
+      }
+
+      const totalIncomeBeforeCommission = grab + bolt + tip + extraIncome;
+
+      // ปรับปรุงค่าคอมมิชชั่นเป็น 19.26%
+      const boltCommission = bolt * 0.1926;
+      const boltAfter = bolt - boltCommission;
+      const totalIncomeBeforeMaintenance = grab + boltAfter + extraIncome;
+      const maintenance = totalIncomeBeforeMaintenance * 0.10;
+
+      // คำนวณรายจ่ายและรายได้สุทธิตามหลักสูตรเดิมของคุณ
+      const totalExpenses = oil + otherExpense + maintenance + boltCommission;
+      const netIncome = totalIncomeBeforeMaintenance - totalExpenses + tip;
+
+      const halfIncomePlusMaintenance = (netIncome / 2 + maintenance).toFixed(2);
+      const costPerKm = distance > 0 ? (totalIncomeBeforeCommission / distance).toFixed(2) : "0.00";
+
+      // อัปเดต HTML ในกล่องสรุปผลสีเขียว
+      renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, tip, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, totalExpenses, netIncome, halfIncomePlusMaintenance, distance, costPerKm);
+
+      // โครงสร้างวัตถุเพื่อบันทึกลงฐานข้อมูลของบราวเซอร์ (LocalStorage)
+      const record = {
+        date, grab, bolt, tip, extraIncome, oil, otherExpense, startKm, endKm, netIncome, distance
+      };
+      saveToLocalStorage(record);
+    }
+
+    function renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, tip, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, totalExpenses, netIncome, halfIncomePlusMaintenance, distance, costPerKm) {
+      const format = n => n.toLocaleString(undefined, { minimumFractionDigits: 2 });
+      const resultDiv = document.getElementById('result');
+
+      resultDiv.innerHTML = `
+        <strong>สรุปผลประจำวันที่: ${date}</strong><br><br>
+        <strong>รายรับ</strong><br>
+        GRAB: ${format(grab)} บาท<br>
+        BOLT: ${format(bolt)} บาท (หัก 19.26%: ${format(boltCommission)} บาท เหลือ: ${format(boltAfter)} บาท)<br>
+        รายรับอื่นๆ: ${format(extraIncome)} บาท<br>
+        ทิป: ${format(tip)} บาท<br>
+        รวมรายรับก่อนหักค่าคอมมิชชั่น: ${format(totalIncomeBeforeCommission)} บาท<br>
+        รวมรายรับก่อนหักค่าซ่อม: ${format(totalIncomeBeforeMaintenance)} บาท<br><br>
+
+        <strong>รายจ่าย</strong><br>
+        ค่าซ่อม 10%: ${format(maintenance)} บาท<br>
+        ค่าน้ำมัน: ${format(oil)} บาท<br>
+        รายจ่ายอื่นๆ: ${format(otherExpense)} บาท<br>
+        ค่าคอมมิชชั่น BOLT (19.26%): ${format(boltCommission)} บาท<br>
+        รวมรายจ่ายทั้งหมด: ${format(totalExpenses)} บาท<br><br>
+
+        <strong>รายได้สุทธิ:</strong> ${format(netIncome)} บาท<br>
+        <strong>หาร 2 + ค่าซ่อม:</strong> ${format(parseFloat(halfIncomePlusMaintenance))} บาท<br><br>
+
+        <strong>ระยะทางที่ใช้:</strong> ${distance} กม.<br>
+        <strong>บาทต่อกิโลเมตร:</strong> ${costPerKm} บาท/กม.
+      `;
+      resultDiv.style.display = 'block'; // แสดงกล่องสีเขียวเมื่อคำนวณเสร็จ
+    }
+
+    // ฟังก์ชันจัดการฐานข้อมูลประวัติในเบราว์เซอร์
+    function saveToLocalStorage(newRecord) {
+      let history = JSON.parse(localStorage.getItem("driver_income_history")) || [];
+      const existingIndex = history.findIndex(item => item.date === newRecord.date);
+      
+      if (existingIndex !== -1) {
+        history[existingIndex] = newRecord; // อัปเดตทับถ้าเป็นวันที่เดิม
+      } else {
+        history.push(newRecord); // เพิ่มรายการใหม่
+      }
+      
+      history.sort((a, b) => new Date(b.date) - new Date(a.date)); // เรียงจากวันใหม่ไปเก่า
+      localStorage.setItem("driver_income_history", JSON.stringify(history));
+      displayHistory();
+    }
+
+    function displayHistory() {
+      const history = JSON.parse(localStorage.getItem("driver_income_history")) || [];
+      const historyList = document.getElementById("history-list");
+      historyList.innerHTML = "";
+
+      if (history.length === 0) {
+        historyList.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">ยังไม่มีประวัติการบันทึก</td></tr>`;
+        return;
+      }
+
+      history.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.date}</td>
+          <td style="color: #006600; font-weight: bold;">${item.netIncome.toLocaleString(undefined, { minimumFractionDigits: 2 })} บาท</td>
+          <td>${item.distance} กม.</td>
+          <td class="action-btns">
+            <button class="btn-view" onclick="viewHistoryItem(${index})">ดู</button>
+            <button class="btn-del" onclick="deleteHistoryItem(${index})">ลบ</button>
+          </td>
+        `;
+        historyList.appendChild(tr);
+      });
+    }
+
+    function viewHistoryItem(index) {
+      const history = JSON.parse(localStorage.getItem("driver_income_history")) || [];
+      const item = history[index];
+
+      // ยัดค่าเก่ากลับเข้าฟอร์ม
+      document.getElementById('date').value = item.date;
+      document.getElementById('grab').value = item.grab || '';
+      document.getElementById('bolt').value = item.bolt || '';
+      document.getElementById('tip').value = item.tip || '';
+      document.getElementById('extraIncome').value = item.extraIncome || '';
+      document.getElementById('oil').value = item.oil || '';
+      document.getElementById('otherExpense').value = item.otherExpense || '';
+      document.getElementById('startKm').value = item.startKm || '';
+      document.getElementById('endKm').value = item.endKm || '';
+
+      calculateAndSave(); // รันฟังก์ชันเพื่อคำนวณและโชว์ผลลัพธ์กรอบเขียว
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // เลื่อนจอกลับไปด้านบนนุ่มๆ
+    }
+
+    function deleteHistoryItem(index) {
+      if (confirm("คุณต้องการลบประวัติรายการนี้ใช่หรือไม่?")) {
+        let history = JSON.parse(localStorage.getItem("driver_income_history")) || [];
+        history.splice(index, 1);
+        localStorage.setItem("driver_income_history", JSON.stringify(history));
+        displayHistory();
+      }
+    }
+
+    function clearAllHistory() {
+      if (confirm("⚠️ คุณต้องการลบประวัติทั้งหมดใช่หรือไม่? ข้อมูลจะถูกลบถาวร")) {
+        localStorage.removeItem("driver_income_history");
+        displayHistory();
+        document.getElementById('result').style.display = 'none';
+        document.getElementById('result').innerHTML = '';
+      }
+    }
+
+    // ฟังก์ชันสำคัญ: บันทึกเฉพาะกรอบสีเขียวเป็นรูปภาพ PNG เท่านั้น
+    function saveAsPNG() {
+      const target = document.getElementById('result');
+      
+      if (target.innerHTML === "" || target.style.display === 'none') {
+        alert("กรุณาทำการคำนวณรายได้ให้เสร็จสิ้นก่อนกดบันทึกรูปภาพ");
+        return;
+      }
+      
+      html2canvas(target, {
+        scale: 2, // เพิ่มความชัดระดับคูณสอง รูปจะได้ไม่แตกเวลาเปิดดู
+        useCORS: true,
+        backgroundColor: "#e6ffe6" // คุมธีมสีพื้นหลังให้เป็นสีเขียวพาสเทลตามหน้าเว็บ
+      }).then(canvas => {
+        const link = document.createElement('a');
+        const dateInput = document.getElementById('date').value || 'summary';
+        link.download = `สรุปรายได้_${dateInput}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }).catch(err => {
+        alert('ระบบบันทึกรูปภาพขัดข้อง กรุณาลองใหม่อีกครั้ง');
+        console.error(err);
+      });
+    }
+
+    function resetForm() {
+      document.querySelectorAll('input:not(#date)').forEach(input => input.value = '');
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'none';
+      resultDiv.innerHTML = '';
+    }
+  </script>
+</body>
+</html>
+
