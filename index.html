@@ -249,7 +249,7 @@
       const totalExpenses = oil + otherExpense + maintenance + boltCommission;
       
       // การคำนวณสัดส่วนรายได้ต่างๆ ตามที่กำหนด
-      const netIncome = totalIncomeBeforeMaintenance - totalExpenses + tip; // รายได้สุทธิหลังหักค่าใช้จ่าย
+      const netIncome = totalIncomeBeforeCommission - totalExpenses ; // รายได้สุทธิหลังหักค่าใช้จ่าย
       const netHalf = netIncome / 2; // รายได้สุทธิหาร 2
       const netHalfPlusMaintenance = netHalf + maintenance; // รายได้สุทธิหาร 2 + ค่าซ่อม
       const netHalfPlusTip = netHalf + tip; // รายได้สุทธิหาร 2 + ทิป
@@ -275,13 +275,15 @@
         <strong>💰 รายรับ</strong><br>
         • GRAB: ${format(grab)} บาท<br>
         • BOLT: ${format(bolt)} บาท (หัก 19.26%: ${format(boltCommission)} บาท เหลือ: ${format(boltAfter)} บาท)<br>
+        • ทิป: ${format(tip)}</strong> บาท<br>
         • รายรับอื่นๆ: ${format(extraIncome)} บาท<br>
-        • รวมรายรับทั้งหมด (ก่อนหักคอม): ${format(totalIncomeBeforeCommission)} บาท<br><br>
+        • รวมรายรับทั้งหมด (ก่อนหักคอม): ${format(totalIncomeBeforeCommission + tip)} บาท<br><br>
 
         <strong>⛽ รายจ่าย</strong><br>
         • ค่าน้ำมัน: ${format(oil)} บาท<br>
         • รายจ่ายอื่นๆ: ${format(otherExpense)} บาท<br>
         • ค่าคอมมิชชั่น BOLT (19.26%): ${format(boltCommission)} บาท<br>
+        • ค่าซ่อม: ${format(maintenance)}</strong> บาท<br>
         • รวมรายจ่ายแฝง: ${format(totalExpenses)} บาท<br><br>
 
         <strong style="font-size: 15px; color: #004d00; display: block; border-top: 1px solid #28a745; padding-top: 8px; margin-top: 5px;">📊 สัดส่วนรายได้สุทธิและการแบ่งสรร</strong>
