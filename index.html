@@ -246,16 +246,18 @@
       const totalIncomeBeforeMaintenance = grab + boltAfter + extraIncome;
       const maintenance = totalIncomeBeforeMaintenance * 0.10;
 
-      // ยอดรวมค่าใช้จ่ายแฝงเท่านั้น (ไม่รวมค่าน้ำมันและรายจ่ายอื่นๆ)
-      const hiddenExpenses = maintenance + boltCommission;
+      const totalExpenses = oil + otherExpense + maintenance + boltCommission;
       
-      // รายได้สุทธิ = รายรับทั้งหมด - ค่าใช้จ่ายแฝง
-      const netIncome = totalIncomeBeforeMaintenance + tip - hiddenExpenses;
+      // การคำนวณสัดส่วนรายได้ต่างๆ ตามที่กำหนด
+      const netIncome = totalIncomeBeforeMaintenance - totalExpenses + tip; // รายได้สุทธิหลังหักค่าใช้จ่าย
+      const netHalf = netIncome / 2; // รายได้สุทธิหาร 2
+      const netHalfPlusMaintenance = netHalf + maintenance; // รายได้สุทธิหาร 2 + ค่าซ่อม
+      const netHalfPlusTip = netHalf + tip; // รายได้สุทธิหาร 2 + ทิป
 
       const costPerKm = distance > 0 ? (totalIncomeBeforeCommission / distance).toFixed(2) : "0.00";
 
       // แสดงผลลัพธ์ในกล่องสรุปผล
-      renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, hiddenExpenses, netIncome, tip, distance, costPerKm);
+      renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, totalExpenses, netIncome, netHalf, netHalfPlusMaintenance, netHalfPlusTip, tip, distance, costPerKm);
 
       // บันทึกลงเครื่อง (LocalStorage)
       const record = {
@@ -264,7 +266,7 @@
       saveToLocalStorage(record);
     }
 
-    function renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, hiddenExpenses, netIncome, tip, distance, costPerKm) {
+    function renderResultHTML(date, grab, bolt, boltCommission, boltAfter, extraIncome, totalIncomeBeforeCommission, totalIncomeBeforeMaintenance, maintenance, oil, otherExpense, totalExpenses, netIncome, netHalf, netHalfPlusMaintenance, netHalfPlusTip, tip, distance, costPerKm) {
       const format = n => n.toLocaleString(undefined, { minimumFractionDigits: 2 });
       const resultDiv = document.getElementById('result');
 
@@ -273,22 +275,24 @@
         <strong>💰 รายรับ</strong><br>
         • GRAB: ${format(grab)} บาท<br>
         • BOLT: ${format(bolt)} บาท (หัก 19.26%: ${format(boltCommission)} บาท เหลือ: ${format(boltAfter)} บาท)<br>
-        • ทิป: ${format(tip)} บาท<br>
         • รายรับอื่นๆ: ${format(extraIncome)} บาท<br>
-        • รวมรายรับทั้งหมด: ${format(totalIncomeBeforeCommission)} บาท<br><br>
+        • รวมรายรับทั้งหมด (ก่อนหักคอม): ${format(totalIncomeBeforeCommission)} บาท<br><br>
 
-        <strong>⛽ รายจ่าย (ค่าใช้จ่ายแฝง)</strong><br>
-        • ค่าคอมมิชชั่น BOLT (19.26%): ${format(boltCommission)} บาท<br>
-        • ค่าซ่อม (10%): ${format(maintenance)} บาท<br>
-        • รวมค่าใช้จ่ายแฝง: ${format(hiddenExpenses)} บาท<br><br>
-
-        <strong>ℹ️ ค่าใช้จ่ายอื่นๆ (ไม่หักจากสุทธิ)</strong><br>
+        <strong>⛽ รายจ่าย</strong><br>
         • ค่าน้ำมัน: ${format(oil)} บาท<br>
-        • รายจ่ายอื่นๆ: ${format(otherExpense)} บาท<br><br>
+        • รายจ่ายอื่นๆ: ${format(otherExpense)} บาท<br>
+        • ค่าคอมมิชชั่น BOLT (19.26%): ${format(boltCommission)} บาท<br>
+        • รวมรายจ่ายแฝง: ${format(totalExpenses - maintenance)} บาท<br><br>
 
-        <strong style="font-size: 18px; color: #004d00; display: block; border-top: 2px solid #28a745; padding-top: 12px; margin-top: 10px;">✨ รายได้สุทธิ: <strong style="font-size: 20px;">${format(netIncome)}</strong> บาท</strong><br><br>
+        <strong style="font-size: 15px; color: #004d00; display: block; border-top: 1px solid #28a745; padding-top: 8px; margin-top: 5px;">📊 สัดส่วนรายได้สุทธิและการแบ่งสรร</strong>
+        • ✨ รายได้สุทธิหลังหักค่าใช้จ่าย: <strong>${format(netIncome)}</strong> บาท<br>
+        • 👥 รายได้สุทธิหาร 2: <strong>${format(netHalf)}</strong> บาท<br>
+        • 🔧 รายได้สุทธิหาร 2 + ค่าซ่อม: <strong>${format(netHalfPlusMaintenance)}</strong> บาท<br>
+        • 💵 รายได้สุทธิหาร 2 + ทิป: <strong>${format(netHalfPlusTip)}</strong> บาท<br>
+        • 🎁 ทิป: <strong>${format(tip)}</strong> บาท<br>
+        • 🛠️ ค่าซ่อม: <strong>${format(maintenance)}</strong> บาท<br><br>
 
-        <span style="font-size: 14px; color: #555; display: block; border-top: 1px dotted #28a745; padding-top: 8px;">
+        <span style="font-size: 15px; color: #555; display: block; border-top: 1px dotted #28a745; padding-top: 5px;">
           🏁 ระยะทางวิ่งจริง: ${distance} กม. | 📈 เฉลี่ย: ${costPerKm} บาท/กม.
         </span>
       `;
