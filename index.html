@@ -249,7 +249,7 @@
       const totalExpenses = oil + otherExpense + maintenance + boltCommission;
       
       // การคำนวณสัดส่วนรายได้ต่างๆ ตามที่กำหนด
-      const netIncome = totalIncomeBeforeCommission - totalExpenses ; // รายได้สุทธิหลังหักค่าใช้จ่าย
+      const netIncome = grab + bolt + extraIncome - totalExpenses; // รายได้สุทธิหลังหักค่าใช้จ่าย
       const netHalf = netIncome / 2; // รายได้สุทธิหาร 2
       const netHalfPlusMaintenance = netHalf + maintenance; // รายได้สุทธิหาร 2 + ค่าซ่อม
       const netHalfPlusTip = netHalf + tip; // รายได้สุทธิหาร 2 + ทิป
