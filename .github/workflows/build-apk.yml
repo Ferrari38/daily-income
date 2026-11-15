@@ -38,6 +38,27 @@ jobs:
       - name: Generate Android project
         working-directory: appsrc
         run: flutter create --platforms=android --org com.example .
+        
+      - name: Match Firebase package name
+        working-directory: appsrc
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("android/app/build.gradle")
+          s = p.read_text()
+          s, count = re.subn(
+              r'applicationId\s*=\s*["\'][^"\']+["\']',
+              'applicationId = "com.example.daily_income"',
+              s,
+              count=1
+          )
+          if count == 0:
+              raise SystemExit("applicationId not found")
+          p.write_text(s)
+          print("Firebase package name configured")
+          PY
 
       - name: Configure Firebase
         working-directory: appsrc
