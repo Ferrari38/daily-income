@@ -39,6 +39,31 @@ jobs:
         working-directory: appsrc
         run: flutter create --platforms=android --org com.example .
         
+      - name: Set Android minimum SDK 23
+        working-directory: appsrc
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("android/app/build.gradle")
+          s = p.read_text()
+
+          s = re.sub(
+              r'minSdk\s*=\s*flutter\.minSdkVersion',
+              'minSdk = 23',
+              s
+          )
+          s = re.sub(
+              r'minSdkVersion\s+flutter\.minSdkVersion',
+              'minSdkVersion 23',
+              s
+          )
+
+          p.write_text(s)
+          print("Android minimum SDK set to 23")
+          PY
+          
       - name: Match Firebase package name
         working-directory: appsrc
         run: |
