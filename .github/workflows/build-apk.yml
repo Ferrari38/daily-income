@@ -1,0 +1,76 @@
+
+name: Build Daily Income APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download source
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+          channel: stable
+
+      - name: Extract Flutter project
+        run: |
+          mkdir appsrc
+          unzip daily_income_apk_project_next.zip -d appsrc
+
+      - name: Generate Android project
+        working-directory: appsrc
+        run: flutter create --platforms=android --org com.example .
+
+      - name: Configure Firebase
+        working-directory: appsrc
+        run: |
+          cp google-services.json android/app/google-services.json
+          python3 - <<'PY'
+          from pathlib import Path
+
+          settings = Path("android/settings.gradle")
+          s = settings.read_text()
+          s = s.replace(
+              "plugins {",
+              'plugins {\n    id "com.google.gms.google-services" version "4.4.2" apply false',
+              1
+          )
+          settings.write_text(s)
+
+          app = Path("android/app/build.gradle")
+          s = app.read_text()
+          s = s.replace(
+              "plugins {",
+              'plugins {\n    id "com.google.gms.google-services"',
+              1
+          )
+          app.write_text(s)
+          PY
+
+      - name: Install dependencies
+        working-directory: appsrc
+        run: flutter pub get
+
+      - name: Build APK
+        working-directory: appsrc
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Daily-Income-APK
+          path: appsrc/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14
+          
